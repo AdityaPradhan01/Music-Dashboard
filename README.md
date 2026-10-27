@@ -80,11 +80,28 @@ npm run dev
 
 Open **http://127.0.0.1:5000**.
 
+## Deploying to Vercel
+
+The app ships with `api/index.js` + `vercel.json` so it runs as a Vercel
+serverless function with no code changes needed:
+
+1. Import the GitHub repo at [vercel.com/new](https://vercel.com/new).
+2. In **Project Settings → Environment Variables**, add `SPOTIFY_CLIENT_ID`,
+   `SPOTIFY_CLIENT_SECRET`, `YOUTUBE_API_KEY` (and `DB_*` only if you have a
+   publicly reachable MySQL instance — `localhost` won't work on Vercel).
+3. Deploy. Framework preset can stay "Other" — no build step is required.
+
+Note: serverless functions are stateless between invocations, so the
+in-memory cache in `services/dataStore.js` is less effective there than on
+a persistent server — each cold start/region starts with an empty cache.
+
 ## Project Structure
 
 ```text
 music-intelligence-dashboard/
-├── server.js                # Express app & API routes
+├── server.js                # Express app & API routes (exports `app` for Vercel)
+├── api/index.js             # Vercel serverless entry point (re-exports server.js)
+├── vercel.json               # Vercel routing + static file bundling config
 ├── services/
 │   ├── spotifyService.js    # Spotify Web API client
 │   ├── youtubeService.js    # YouTube Data API v3 client

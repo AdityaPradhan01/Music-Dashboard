@@ -563,7 +563,13 @@ app.use((err, req, res, next) => {
   errorResponse(res, "An unexpected error occurred. Please try again.", 500);
 });
 
-const PORT = parseInt(process.env.PORT || "5000", 10);
-app.listen(PORT, "127.0.0.1", () => {
-  console.log(`Music Intelligence Dashboard running at http://127.0.0.1:${PORT}`);
-});
+// Vercel imports this module for its serverless function and calls the
+// exported app directly — it must not also bind a local port.
+if (!process.env.VERCEL) {
+  const PORT = parseInt(process.env.PORT || "5000", 10);
+  app.listen(PORT, "127.0.0.1", () => {
+    console.log(`Music Intelligence Dashboard running at http://127.0.0.1:${PORT}`);
+  });
+}
+
+export default app;
