@@ -1,0 +1,22 @@
+node_modules/
+.env
+*.log
+
+# Python (legacy, left over from earlier venv usage)
+venv/
+__pycache__/
+*.pyc
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Presentation / binary assets (kept local, not published)
+*.pptx
+*.mp4
+A4 poster.pdf
+Music_Intelligence_Dashboard_Flow.pdf
+Music_Intelligence_Dashboard_Poster.pdf
+Music_Intelligence_Dashboard_Report.pdf
+music.png
+design_handoff_music_intelligence_dashboard/

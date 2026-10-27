@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Music Intelligence Dashboard</title>
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="app-shell">
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">MI<span class="dot"></span></div>
+      <div class="brand-text">
+        <span class="brand-title">Music Intelligence</span>
+        <span class="brand-sub">Analytics platform</span>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <div class="nav-group">
+        <div class="nav-label">Overview</div>
+        <button class="nav-link active" data-view="dashboard"><span class="dot"></span><span>Dashboard</span></button>
+      </div>
+      <div class="nav-group">
+        <div class="nav-label">Music analytics</div>
+        <button class="nav-link" data-view="artists"><span class="dot"></span><span>Artists</span></button>
+        <button class="nav-link" data-view="tracks"><span class="dot"></span><span>Tracks</span></button>
+        <button class="nav-link" data-view="trends"><span class="dot"></span><span>Trends</span></button>
+      </div>
+      <div class="nav-group">
+        <div class="nav-label">Audience intelligence</div>
+        <button class="nav-link" data-view="sentiment"><span class="dot"></span><span>Sentiment</span></button>
+        <button class="nav-link" data-view="keywords"><span class="dot"></span><span>Keywords</span></button>
+        <button class="nav-link" data-view="topics"><span class="dot"></span><span>Topics</span></button>
+        <button class="nav-link" data-view="comments"><span class="dot"></span><span>Comments</span></button>
+      </div>
+      <div class="nav-group">
+        <div class="nav-label">Comparisons</div>
+        <button class="nav-link" data-view="artistcmp"><span class="dot"></span><span>Artist Comparison</span></button>
+        <button class="nav-link" data-view="trackcmp"><span class="dot"></span><span>Track Comparison</span></button>
+        <button class="nav-link" data-view="svy"><span class="dot"></span><span>Spotify vs YouTube</span></button>
+      </div>
+      <div class="nav-group">
+        <div class="nav-label">Analysis</div>
+        <button class="nav-link" data-view="insights"><span class="dot"></span><span>Audience Insights</span></button>
+      </div>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="nav-label">System</div>
+      <button class="nav-link" data-view="settings"><span class="dot"></span><span>Settings</span></button>
+      <button class="nav-link" data-view="api"><span class="dot"></span><span>API Status</span></button>
+      <button class="nav-link" data-view="about"><span class="dot"></span><span>About</span></button>
+    </div>
+  </aside>
+
+  <!-- ===================== MAIN ===================== -->
+  <div class="main">
+    <header class="topbar">
+      <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+      <form class="global-search" id="globalSearchForm">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C2006B" stroke-width="2.75" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+        <input type="text" id="globalSearch" placeholder="Search artist or track…" autocomplete="off">
+        <div class="search-suggestions" id="searchSuggestions"></div>
+      </form>
+      <div class="topbar-context">
+        <span>Selected <strong id="topbarSelected">No artist selected</strong></span>
+      </div>
+      <div class="topbar-actions">
+        <span class="mode-badge" id="modeBadge">Checking…</span>
+        <span class="last-updated" id="lastUpdated">Updated —</span>
+        <button class="icon-btn" id="refreshBtn" aria-label="Refresh data">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"></path><path d="M21 3v5h-5"></path></svg>
+        </button>
+        <button class="avatar-btn" id="settingsBtn" aria-label="Settings" data-view="settings">MI</button>
+      </div>
+    </header>
+
+    <main class="content" id="content">
+
+      <!-- shared green page header for every non-dashboard view -->
+      <header class="page-header hidden" id="pageHeader">
+        <svg class="rules" viewBox="0 0 1200 300" preserveAspectRatio="xMidYMid slice" fill="none" stroke="#0B0B0B" stroke-opacity="0.22">
+          <line x1="0" y1="200" x2="1200" y2="200"></line>
+          <line x1="300" y1="0" x2="300" y2="600"></line>
+          <line x1="600" y1="0" x2="600" y2="600"></line>
+          <line x1="900" y1="0" x2="900" y2="600"></line>
+          <circle cx="900" cy="200" r="160"></circle>
+        </svg>
+        <div class="shape circle shape-pink-circle" style="left:80%;top:16%;width:110px;height:110px;"></div>
+        <div class="shape shape-ink-square" style="left:91%;top:8%;width:54px;height:54px;"></div>
+        <div class="shape quarter shape-pink-quarter" style="left:71%;top:62%;width:40px;height:40px;"></div>
+        <div class="page-header-body">
+          <span class="page-header-group" id="pageHeaderGroup"></span>
+          <div class="page-header-title-row">
+            <h1 class="page-header-title" id="pageHeaderTitle"></h1>
+            <span class="page-header-badge hidden" id="pageHeaderBadge"></span>
+          </div>
+          <p class="page-header-sub" id="pageHeaderSub"></p>
+        </div>
+      </header>
+
+      <!-- DASHBOARD -->
+      <section class="view" id="view-dashboard">
+        <div class="hero">
+          <svg class="rules" viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice" fill="none" stroke="#0B0B0B" stroke-opacity="0.22">
+            <line x1="0" y1="200" x2="1200" y2="200"></line>
+            <line x1="300" y1="0" x2="300" y2="600"></line>
+            <line x1="600" y1="0" x2="600" y2="600"></line>
+            <line x1="900" y1="0" x2="900" y2="600"></line>
+            <circle cx="900" cy="200" r="160"></circle>
+          </svg>
+          <div class="shape quarter shape-pink-quarter" style="left:60%;top:130px;width:170px;height:170px;"></div>
+          <div class="shape shape-ink-square" style="right:90px;top:26px;width:62px;height:62px;"></div>
+          <div class="shape circle shape-ring" style="right:24px;top:110px;width:46px;height:46px;"></div>
+          <div class="shape circle shape-pink-circle" style="left:-40px;top:230px;width:190px;height:190px;"></div>
+          <div class="hero-body">
+            <p class="hero-tagline">Spotify listening and YouTube conversation, read together to find what is rising.</p>
+            <h1 class="hero-title"><span class="l1">MUSIC</span><span class="l2">Intelligence</span></h1>
+            <form class="hero-form" id="heroSearchForm">
+              <input type="text" id="heroSearch" placeholder='Try &ldquo;The Weeknd&rdquo;, &ldquo;Blinding Lights&rdquo;, &ldquo;Dua Lipa&rdquo;&hellip;'>
+              <button type="submit" class="btn-primary">Analyze</button>
+            </form>
+            <div class="hero-chips" id="suggestedArtists"></div>
+          </div>
+        </div>
+
+        <div id="dashboardEmptyState" class="hidden"></div>
+        <div id="dashboardResults">
+          <div id="youtubeQuotaBanner" class="hidden"></div>
+          <div class="kpi-grid" id="kpiGrid"></div>
+
+          <div class="grid-2">
+            <div class="panel">
+              <div class="card-title-row">
+                <h3 class="card-title">Spotify release catalog</h3>
+                <span class="tag tag-spotify">Spotify data</span>
+                <div class="segmented" id="spSortSeg" style="margin-left:auto">
+                  <button data-val="newest" class="active">Newest</button>
+                  <button data-val="name">Name</button>
+                </div>
+              </div>
+              <div class="bar-rows" id="spBars"></div>
+            </div>
+
+            <div class="panel">
+              <div class="card-title-row">
+                <h3 class="card-title">YouTube performance</h3>
+                <span class="tag tag-youtube">YouTube data</span>
+                <div class="segmented" id="ytMetricSeg" style="margin-left:auto">
+                  <button data-val="views" class="active">Views</button>
+                  <button data-val="likes">Likes</button>
+                  <button data-val="comment_count">Comments</button>
+                </div>
+              </div>
+              <div class="lollipop-wrap" id="ytLollipop"></div>
+              <div class="lollipop-labels" id="ytLollipopLabels"></div>
+            </div>
+          </div>
+
+          <div class="svy-panel">
+            <div style="display:flex;flex-direction:column;gap:14px;">
+              <div class="card-title-row"><h3 class="card-title">Spotify vs YouTube</h3><span class="tag tag-calc">Calculated metric</span></div>
+              <span class="svy-r" id="dashCorrR">—</span>
+              <p class="svy-desc" id="dashCorrDesc"></p>
+              <button class="btn-primary" id="dashSvyBtn" style="align-self:flex-start;background:var(--green);color:var(--ink);">Open full analysis →</button>
+            </div>
+            <div class="mini-scatter" id="dashMiniScatter">
+              <span class="axis-label">Spotify total releases →</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ARTISTS -->
+      <section class="view hidden" id="view-artists">
+        <div class="artist-cards" id="artistGrid"></div>
+      </section>
+
+      <!-- TRACKS -->
+      <section class="view hidden" id="view-tracks">
+        <div class="filter-row">
+          <span style="font-size:13px;font-weight:600">Sort by</span>
+          <div class="segmented" id="trackSortSeg">
+            <button data-val="newest" class="active">Newest</button>
+            <button data-val="views">Views</button>
+            <button data-val="engagement">Engagement</button>
+          </div>
+        </div>
+        <div class="row-table-wrap">
+          <div class="row-table">
+            <div class="row-head cols-tracks"><span>Track</span><span>Artist</span><span>Album</span><span>Views</span><span>Likes</span><span>Comments</span><span>Engagement</span></div>
+            <div id="tracksRows"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TRENDS -->
+      <section class="view hidden" id="view-trends">
+        <div class="filter-row">
+          <div class="segmented" id="trendScopeSeg">
+            <button data-val="artist" class="active">This artist's tracks</button>
+            <button data-val="all">Full catalog</button>
+          </div>
+          <span class="filter-note">Each input is min-max normalized across the catalog before weighting.</span>
+        </div>
+        <div class="row-table-wrap">
+          <div class="row-table wide">
+            <div class="row-head cols-trends"><span>Rank</span><span>Track</span><span>Views</span><span>Engagement</span><span>Discussion</span><span>Trend score</span><span title="Modeled estimate — not real historical data">Status (est.)</span></div>
+            <div id="trendsRows"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SENTIMENT -->
+      <section class="view hidden" id="view-sentiment">
+        <div class="kpi-grid" id="sentimentKpis"></div>
+        <div class="grid-2">
+          <div class="donut-row" id="sentimentDonutFull"></div>
+          <div class="panel-outline">
+            <h3 class="card-title">Sentiment by track</h3>
+            <div id="sentByTrack" style="display:flex;flex-direction:column;gap:20px;"></div>
+            <span class="engine-note" id="sentEngineNote">Classifier: bundled lexicon (offline)</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- KEYWORDS -->
+      <section class="view hidden" id="view-keywords">
+        <div class="segmented" id="kwModeSeg">
+          <button data-val="frequency" class="active">Frequency</button>
+          <button data-val="tfidf">TF-IDF</button>
+          <button data-val="ngram">N-grams</button>
+        </div>
+        <div class="kw-layout">
+          <div class="kw-cloud" id="kwCloud"></div>
+          <div class="kw-list">
+            <div class="kw-list-head" id="kwListHead"><span>Term</span><span>Frequency</span></div>
+            <div id="kwListBody"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TOPICS -->
+      <section class="view hidden" id="view-topics">
+        <div class="filter-row">
+          <div class="segmented" id="topicMethodSeg">
+            <button data-val="lda" class="active">LDA</button>
+            <button data-val="nmf">NMF</button>
+            <button data-val="kmeans">TF-IDF + K-Means</button>
+          </div>
+          <div class="segmented" id="topicKSeg">
+            <button data-val="3">3 Topics</button>
+            <button data-val="4" class="active">4 Topics</button>
+            <button data-val="5">5 Topics</button>
+            <button data-val="6">6 Topics</button>
+          </div>
+        </div>
+        <div class="topic-cards" id="topicGridFull"></div>
+      </section>
+
+      <!-- COMMENTS -->
+      <section class="view hidden" id="view-comments">
+        <div class="kpi-grid" id="commentsKpis"></div>
+        <div class="filter-row">
+          <select id="commentTrackSelect" class="cmp-select" style="width:auto;background:var(--panel);"></select>
+          <div class="segmented" id="commentSentSeg">
+            <button data-val="" class="active">All</button>
+            <button data-val="positive">Positive</button>
+            <button data-val="neutral">Neutral</button>
+            <button data-val="negative">Negative</button>
+          </div>
+          <input type="text" id="commentSearch" placeholder="Search comments…" style="padding:9px 14px;border:1.5px solid var(--panel);background:var(--ground);font:500 13px 'Instrument Sans',sans-serif;">
+        </div>
+        <div class="comment-cards" id="commentFeed"></div>
+        <div class="pagination-bar" id="commentPagination"></div>
+      </section>
+
+      <!-- ARTIST COMPARISON -->
+      <section class="view hidden" id="view-artistcmp">
+        <div class="cmp-pickers">
+          <div class="cmp-picker a"><span class="cmp-picker-label">Artist A — from Dashboard</span><div class="cmp-chip-row" id="cmpAOpts"></div></div>
+          <div class="cmp-picker b"><span class="cmp-picker-label">Artist B</span><select class="cmp-select" id="cmpBSelect"></select></div>
+        </div>
+        <div class="cmp-panel">
+          <div class="cmp-header-row"><span class="name-a" id="cmpNameA"></span><span></span><span class="name-b" id="cmpNameB"></span></div>
+          <div id="cmpRows"></div>
+        </div>
+      </section>
+
+      <!-- TRACK COMPARISON -->
+      <section class="view hidden" id="view-trackcmp">
+        <div class="cmp-pickers">
+          <label class="cmp-picker a cmp-picker-label">Track A
+            <select id="trackCmpASelect" class="cmp-select" style="margin-top:8px;"></select>
+          </label>
+          <label class="cmp-picker b cmp-picker-label">Track B
+            <select id="trackCmpBSelect" class="cmp-select" style="margin-top:8px;"></select>
+          </label>
+        </div>
+        <div class="cmp-panel">
+          <div class="cmp-header-row"><span class="name-a" id="trackCmpNameA"></span><span></span><span class="name-b" id="trackCmpNameB"></span></div>
+          <div id="trackCmpRows"></div>
+        </div>
+      </section>
+
+      <!-- SPOTIFY VS YOUTUBE -->
+      <section class="view hidden" id="view-svy">
+        <div class="filter-row">
+          <div class="segmented" id="svyXMetricSeg">
+            <button data-val="spotify_total_releases" class="active">Total releases</button>
+            <button data-val="spotify_avg_release_gap_days">Avg. days between releases</button>
+          </div>
+          <div class="segmented" id="svyMetricSeg">
+            <button data-val="youtube_subscribers" class="active">Subscribers</button>
+            <button data-val="youtube_channel_views">Channel views</button>
+            <button data-val="youtube_channel_videos">Channel videos</button>
+          </div>
+        </div>
+        <span class="filter-note">One dot per artist visited this session. Visit a few more artists for a meaningful correlation.</span>
+        <div class="svy-grid">
+          <div class="svy-plot">
+            <div class="svy-plot-inner" id="svyPlotInner">
+              <div class="svy-yticks" id="svyYTicks"></div>
+              <div id="svyDots"></div>
+              <div id="svyXTicks"></div>
+            </div>
+            <span class="svy-xaxis-label" id="svyXAxisLabel">Spotify total releases</span>
+          </div>
+          <div class="svy-side">
+            <div class="svy-stat-card">
+              <span class="svy-stat-label">Pearson r</span>
+              <span class="svy-stat-value" id="svyPearsonR">—</span>
+              <span class="svy-stat-note" id="svyPearsonRead"></span>
+            </div>
+            <div class="svy-stat-card pink">
+              <span class="svy-stat-label">Spearman ρ</span>
+              <span class="svy-stat-value" id="svySpearman">—</span>
+              <span class="svy-stat-note" id="svyN"></span>
+            </div>
+            <p class="svy-hint" id="svyHint">Each dot is one artist.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- AUDIENCE INSIGHTS -->
+      <section class="view hidden" id="view-insights">
+        <div class="grid-2">
+          <div class="panel">
+            <h3 class="card-title">Sentiment</h3>
+            <div class="donut-row" id="insightsDonut" style="padding:0;background:transparent;"></div>
+          </div>
+          <div class="panel" style="background:var(--green)">
+            <h3 class="card-title">Top keywords</h3>
+            <div class="kw-pill-row" id="insightsKeywords"></div>
+          </div>
+        </div>
+        <div class="topic-cards small" id="insightsTopics"></div>
+      </section>
+
+      <!-- SETTINGS -->
+      <section class="view hidden" id="view-settings">
+        <div class="grid-2" style="align-items:start;">
+          <div class="settings-block">
+            <div class="setting-row">
+              <span class="label">Data mode</span>
+              <div class="segmented on-light" id="settingsModeSeg"><button class="active" id="settingsModeBtn"></button></div>
+              <span class="setting-note" id="settingsModeNote"></span>
+            </div>
+            <div class="setting-row">
+              <span class="label">Sentiment engine</span>
+              <div class="segmented on-light"><button class="active">Bundled lexicon</button></div>
+              <span class="setting-note">Pure-JS lexicon scoring — no external NLP download required.</span>
+            </div>
+            <div class="setting-row">
+              <span class="label">Topic model</span>
+              <div class="segmented on-light" id="settingsTopicSeg">
+                <button data-val="lda" class="active">LDA</button>
+                <button data-val="nmf">NMF</button>
+                <button data-val="kmeans">K-Means</button>
+              </div>
+              <span class="setting-note">Applied on the Topics and Audience Insights pages.</span>
+            </div>
+            <div class="toggle-row">
+              <span class="label">Auto-refresh every 5 minutes</span>
+              <button class="toggle" id="autoRefreshToggle" aria-label="Toggle auto-refresh"><span class="knob"></span></button>
+            </div>
+          </div>
+          <div class="panel-outline">
+            <h3 class="card-title">Environment</h3>
+            <p style="margin:0;font-size:13px;color:var(--muted)">Credentials are read from <code>.env</code>. None are stored in the app.</p>
+            <div class="env-list" id="envVarsList"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- API STATUS -->
+      <section class="view hidden" id="view-api">
+        <div class="api-cards" id="apiStatusCards"></div>
+      </section>
+
+      <!-- ABOUT -->
+      <section class="view hidden" id="view-about">
+        <div class="about-hero">
+          <div class="shape circle shape-pink-circle" style="right:-60px;bottom:-60px;width:220px;height:220px;"></div>
+          <div class="shape circle shape-pink-circle" style="right:150px;bottom:110px;width:54px;height:54px;"></div>
+          <span class="q-label">Primary research question</span>
+          <p class="q-text">Is Spotify popularity correlated with YouTube audience engagement?</p>
+        </div>
+        <div class="formula-cards">
+          <div class="formula-card">
+            <span class="formula-label">Engagement Rate</span>
+            <span class="formula-value">(Likes + Comments) / Views × 100</span>
+            <span class="formula-note">A Calculated Project Metric.</span>
+          </div>
+          <div class="formula-card">
+            <span class="formula-label">Music Trend Score</span>
+            <span class="formula-value" style="font-size:19px;">30% Spotify Popularity + 30% YouTube View Growth + 20% YouTube Engagement + 20% Audience Discussion Growth</span>
+            <span class="formula-note">Each component min-max normalized first. A custom project metric, not an official Spotify or YouTube score.</span>
+          </div>
+        </div>
+        <div class="stack-card">
+          <span class="formula-label">Tech stack</span>
+          <div class="stack-row">
+            <span class="stack-chip" style="background:var(--green)">Node.js</span>
+            <span class="stack-chip" style="background:var(--pink)">Express</span>
+            <span class="stack-chip" style="background:var(--panel)">MySQL</span>
+            <span class="stack-chip" style="background:var(--green)">Spotify Web API</span>
+            <span class="stack-chip" style="background:var(--pink)">YouTube Data API v3</span>
+            <span class="stack-chip" style="background:var(--panel)">HTML</span>
+            <span class="stack-chip" style="background:var(--green)">CSS</span>
+            <span class="stack-chip" style="background:var(--pink)">JavaScript</span>
+          </div>
+          <p style="margin:6px 0 0;font-size:13px;line-height:1.6;color:var(--muted);max-width:760px;">YouTube's Data API v3 is used purely as a video/audience-discussion data source — it is not described as an official "YouTube Music API". All API credentials are read from environment variables; none are hardcoded. All SQL is parameterized.</p>
+        </div>
+      </section>
+
+      <datalist id="artistList"></datalist>
+      <datalist id="trackList"></datalist>
+
+    </main>
+  </div>
+</div>
+
+<div class="toast-stack" id="toastStack"></div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
